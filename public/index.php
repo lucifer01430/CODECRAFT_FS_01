@@ -1,0 +1,61 @@
+<?php
+
+require_once __DIR__ . '/../error-config.php';
+
+session_start();
+
+// Load database
+require_once __DIR__ . '/../config/database.php';
+
+// Load models
+require_once __DIR__ . '/../app/models/User.php';
+
+// Load controllers
+require_once __DIR__ . '/../app/controllers/AuthController.php';
+require_once __DIR__ . '/../app/controllers/DashboardController.php';
+
+// Simple routing using "page" query param
+$page = $_GET['page'] ?? 'login';
+
+$authController = new AuthController($pdo);
+$dashboardController = new DashboardController($pdo);
+
+switch ($page) {
+    case 'register':
+        $authController->register();
+        break;
+
+    case 'register_submit':
+        $authController->registerSubmit();
+        break;
+
+    case 'login':
+        $authController->login();
+        break;
+
+    case 'login_submit':
+        $authController->loginSubmit();
+        break;
+
+    case 'logout':
+        $authController->logout();
+        break;
+
+    case 'dashboard':
+        $dashboardController->index();
+        break;
+
+    case 'verify_otp':
+    $authController->verifyOtp();
+    break;
+
+    case 'verify_otp_submit':
+    $authController->verifyOtpSubmit();
+    break;
+
+
+    default:
+        // Unknown page → redirect to login
+        header('Location: index.php?page=login');
+        exit;
+}
