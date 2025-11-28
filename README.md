@@ -84,6 +84,8 @@ Every action is validated, protected, and logged using best practices suitable f
 
 ---
 
+```
+
 ## 📂 Folder Structure (Short Version)
 
 CODECRAFT_FS_01/
@@ -98,6 +100,7 @@ CODECRAFT_FS_01/
 ├── vendor/ # PHPMailer + Composer dependencies
 └── README.md
 
+```
 
 ---
 
@@ -113,10 +116,10 @@ Follow these steps to run the project locally:
 
 ### 2️⃣ Clone or Download Project
 
-
+```
 htdocs/
 └── CODECRAFT_FS_01/
-
+```
 
 ### 3️⃣ Database Setup
 - Create a MySQL database  
@@ -163,7 +166,7 @@ Visit:
 
 
 
-http://localhost/CODECRAFT_FS_01/public/index.php?page=register
+http://localhost/CODECRAFT_FS_01/public/
 
 
 ---
