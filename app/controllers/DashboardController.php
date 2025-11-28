@@ -13,10 +13,7 @@ class DashboardController
     public function index()
     {
         // Protect route
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: index.php?page=login');
-            exit;
-        }
+        requireLogin();
 
         // User name show karne ke liye session me store karenge login ke time
         $userName = $_SESSION['user_name'] ?? 'User';

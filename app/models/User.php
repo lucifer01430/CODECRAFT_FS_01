@@ -50,21 +50,36 @@ class User
 
     public function verifyOtpForEmail($email, $otpCode)
     {
+        // Fetch user by email first to provide better logging and diagnostics
         $stmt = $this->pdo->prepare(
-            "SELECT * FROM users 
-             WHERE email = :email 
-               AND otp_code = :otp_code 
-               AND otp_expires_at >= NOW()
-             LIMIT 1"
+            "SELECT * FROM users WHERE email = :email LIMIT 1"
         );
-        $stmt->execute([
-            'email'   => $email,
-            'otp_code'=> $otpCode
-        ]);
-
+        $stmt->execute(['email' => $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$user) {
+            error_log("verifyOtpForEmail: user not found for email={$email}");
+            return false;
+        }
+
+        // Log stored OTP and expiry for debugging (do not expose to users)
+        error_log("verifyOtpForEmail: stored_otp={$user['otp_code']} expires_at={$user['otp_expires_at']} for email={$email}");
+
+        // Check otp and expiry in PHP for clearer behavior
+        if (empty($user['otp_code']) || (string)$user['otp_code'] !== (string)$otpCode) {
+            error_log("verifyOtpForEmail: otp mismatch for email={$email} provided={$otpCode}");
+            return false;
+        }
+
+        // Check expiry
+        if (!empty($user['otp_expires_at'])) {
+            $expires = strtotime($user['otp_expires_at']);
+            if ($expires < time()) {
+                error_log("verifyOtpForEmail: otp expired for email={$email} expired_at={$user['otp_expires_at']}");
+                return false;
+            }
+        } else {
+            error_log("verifyOtpForEmail: no otp_expires_at set for email={$email}");
             return false;
         }
 
@@ -76,6 +91,7 @@ class User
         );
         $update->execute(['id' => $user['id']]);
 
+        error_log("verifyOtpForEmail: verification successful for email={$email}");
         return $user;
     }
 }

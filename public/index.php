@@ -1,8 +1,12 @@
 <?php
 
 require_once __DIR__ . '/../error-config.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 session_start();
+
+// Load helpers (flash, csrf, redirect, etc.)
+require_once __DIR__ . '/../app/helpers.php';
 
 // Load database
 require_once __DIR__ . '/../config/database.php';
@@ -53,7 +57,11 @@ switch ($page) {
     $authController->verifyOtpSubmit();
     break;
 
+    case 'resend_otp':
+    $authController->resendOtp();
+    break;
 
+    
     default:
         // Unknown page → redirect to login
         header('Location: index.php?page=login');

@@ -1,4 +1,6 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class AuthController
 {
@@ -15,43 +17,51 @@ class AuthController
 
     public function register()
     {
-        $error = $_SESSION['error'] ?? null;
-        $success = $_SESSION['success'] ?? null;
-        unset($_SESSION['error'], $_SESSION['success']);
+        $error = getFlash('error');
+        $success = getFlash('success');
 
         include __DIR__ . '/../views/auth/register.php';
     }
 
     public function registerSubmit()
     {
+
+        // CSRF check
+        if (!csrf_validate($_POST['_csrf_token'] ?? '')) {
+            setFlash('error', 'Invalid CSRF token. Please try again.');
+            redirect("{$this->baseUrl}?page=register");
+        }
+
         $name     = trim($_POST['name'] ?? '');
-        $email    = trim($_POST['email'] ?? '');
+        $email    = normalize_email($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
         $confirm  = $_POST['confirm_password'] ?? '';
 
         if ($name === '' || $email === '' || $password === '' || $confirm === '') {
-            $_SESSION['error'] = "All fields are required.";
-            header("Location: {$this->baseUrl}?page=register");
-            exit;
+            setFlash('error', "All fields are required.");
+            redirect("{$this->baseUrl}?page=register");
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $_SESSION['error'] = "Invalid email address.";
-            header("Location: {$this->baseUrl}?page=register");
-            exit;
+            setFlash('error', "Invalid email address.");
+            redirect("{$this->baseUrl}?page=register");
         }
 
         if ($password !== $confirm) {
-            $_SESSION['error'] = "Passwords do not match.";
-            header("Location: {$this->baseUrl}?page=register");
-            exit;
+            setFlash('error', "Passwords do not match.");
+            redirect("{$this->baseUrl}?page=register");
+        }
+
+        // Password strength: min 8 chars, at least one letter and one number
+        if (strlen($password) < 8 || !preg_match('/[A-Za-z]/', $password) || !preg_match('/\d/', $password)) {
+            setFlash('error', 'Password must be at least 8 characters long and contain at least one letter and one number.');
+            redirect("{$this->baseUrl}?page=register");
         }
 
         // Check if email already exists
         if ($this->userModel->findByEmail($email)) {
-            $_SESSION['error'] = "Email already registered.";
-            header("Location: {$this->baseUrl}?page=register");
-            exit;
+            setFlash('error', "Email already registered.");
+            redirect("{$this->baseUrl}?page=register");
         }
 
         $passwordHash = password_hash($password, PASSWORD_BCRYPT);
@@ -70,61 +80,94 @@ class AuthController
 
         // Save email in session for verification step
         $_SESSION['verify_email'] = $email;
-        $_SESSION['success'] = "Registration successful! An OTP has been sent to your email. Please verify.";
+        setFlash('success', "Registration successful! An OTP has been sent to your email. Please verify.");
 
-        header("Location: {$this->baseUrl}?page=verify_otp");
-        exit;
+        redirect("{$this->baseUrl}?page=verify_otp");
     }
 
     public function login()
     {
-        $error = $_SESSION['error'] ?? null;
-        $success = $_SESSION['success'] ?? null;
-        unset($_SESSION['error'], $_SESSION['success']);
-
+        $error = getFlash('error');
+        $success = getFlash('success');
         include __DIR__ . '/../views/auth/login.php';
     }
 
     public function loginSubmit()
     {
-        $email    = trim($_POST['email'] ?? '');
+
+        // CSRF check
+        if (!csrf_validate($_POST['_csrf_token'] ?? '')) {
+            setFlash('error', 'Invalid CSRF token.');
+            redirect("{$this->baseUrl}?page=login");
+        }
+
+        $email    = normalize_email($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
 
         if ($email === '' || $password === '') {
-            $_SESSION['error'] = "Email and password are required.";
-            header("Location: {$this->baseUrl}?page=login");
-            exit;
+            setFlash('error', "Email and password are required.");
+            redirect("{$this->baseUrl}?page=login");
+        }
+
+        // Rate limiting: per-IP and per-email
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $keyIp = "login_ip_{$ip}";
+        $keyEmail = "login_email_{$email}";
+        $maxAttempts = 5;
+        $decaySeconds = 900; // 15 minutes
+
+        // init
+        if (empty($_SESSION[$keyIp])) {
+            $_SESSION[$keyIp] = ['count' => 0, 'first' => time()];
+        }
+        if (empty($_SESSION[$keyEmail])) {
+            $_SESSION[$keyEmail] = ['count' => 0, 'first' => time()];
+        }
+
+        // reset if decay passed
+        if (time() - $_SESSION[$keyIp]['first'] > $decaySeconds) {
+            $_SESSION[$keyIp] = ['count' => 0, 'first' => time()];
+        }
+        if (time() - $_SESSION[$keyEmail]['first'] > $decaySeconds) {
+            $_SESSION[$keyEmail] = ['count' => 0, 'first' => time()];
+        }
+
+        if ($_SESSION[$keyIp]['count'] >= $maxAttempts || $_SESSION[$keyEmail]['count'] >= $maxAttempts) {
+            setFlash('error', 'Too many failed login attempts. Please wait 15 minutes and try again.');
+            redirect("{$this->baseUrl}?page=login");
         }
 
         $user = $this->userModel->findByEmail($email);
 
         if (!$user || !password_verify($password, $user['password'])) {
-            $_SESSION['error'] = "Invalid email or password.";
-            header("Location: {$this->baseUrl}?page=login");
-            exit;
+            $_SESSION[$keyIp]['count']++;
+            $_SESSION[$keyEmail]['count']++;
+            setFlash('error', "Invalid email or password.");
+            redirect("{$this->baseUrl}?page=login");
         }
 
+
         if ((int)$user['is_verified'] !== 1) {
-            $_SESSION['error'] = "Your account is not verified. Please check your email for OTP.";
+            setFlash('error', "Your account is not verified. Please check your email for OTP.");
             $_SESSION['verify_email'] = $email;
-            header("Location: {$this->baseUrl}?page=verify_otp");
-            exit;
+            redirect("{$this->baseUrl}?page=verify_otp");
         }
 
         // Login success
+        // clear attempt counters on success
+        unset($_SESSION[$keyIp], $_SESSION[$keyEmail]);
+
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_name'] = $user['name'];
         $_SESSION['user_email'] = $user['email'];
 
-        header("Location: {$this->baseUrl}?page=dashboard");
-        exit;
+        redirect("{$this->baseUrl}?page=dashboard");
     }
 
     public function verifyOtp()
     {
-        $error = $_SESSION['error'] ?? null;
-        $success = $_SESSION['success'] ?? null;
-        unset($_SESSION['error'], $_SESSION['success']);
+        $error = getFlash('error');
+        $success = getFlash('success');
 
         $email = $_SESSION['verify_email'] ?? '';
 
@@ -133,45 +176,159 @@ class AuthController
 
     public function verifyOtpSubmit()
     {
-        $email = trim($_POST['email'] ?? '');
+        // CSRF check
+        if (!csrf_validate($_POST['_csrf_token'] ?? '')) {
+            setFlash('error', 'Invalid CSRF token.');
+            redirect("{$this->baseUrl}?page=verify_otp");
+        }
+
+        $email = normalize_email($_POST['email'] ?? '');
         $otp   = trim($_POST['otp'] ?? '');
 
         if ($email === '' || $otp === '') {
-            $_SESSION['error'] = "Email and OTP are required.";
-            header("Location: {$this->baseUrl}?page=verify_otp");
-            exit;
+            setFlash('error', "Email and OTP are required.");
+            redirect("{$this->baseUrl}?page=verify_otp");
+        }
+
+        // Rate limiting for OTP verification per email
+        $keyOtp = "otp_attempt_{$email}";
+        $maxOtpAttempts = 5;
+        $otpDecay = 900; // 15 minutes
+        if (empty($_SESSION[$keyOtp])) {
+            $_SESSION[$keyOtp] = ['count' => 0, 'first' => time()];
+        }
+        if (time() - $_SESSION[$keyOtp]['first'] > $otpDecay) {
+            $_SESSION[$keyOtp] = ['count' => 0, 'first' => time()];
+        }
+        if ($_SESSION[$keyOtp]['count'] >= $maxOtpAttempts) {
+            setFlash('error', 'Too many OTP attempts. Please wait and try again later.');
+            redirect("{$this->baseUrl}?page=verify_otp");
+        }
+
+        // Fetch user to provide better messages
+        $userRow = $this->userModel->findByEmail($email);
+        if (!$userRow) {
+            $_SESSION[$keyOtp]['count']++;
+            setFlash('error', 'No account found for that email.');
+            redirect("{$this->baseUrl}?page=verify_otp");
+        }
+
+        // Check expiry
+        if (!empty($userRow['otp_expires_at']) && strtotime($userRow['otp_expires_at']) < time()) {
+            setFlash('error', 'OTP expired. Please resend OTP.');
+            redirect("{$this->baseUrl}?page=verify_otp");
         }
 
         $user = $this->userModel->verifyOtpForEmail($email, $otp);
 
         if (!$user) {
-            $_SESSION['error'] = "Invalid or expired OTP.";
-            header("Location: {$this->baseUrl}?page=verify_otp");
-            exit;
+            $_SESSION[$keyOtp]['count']++;
+            setFlash('error', 'Invalid OTP.');
+            redirect("{$this->baseUrl}?page=verify_otp");
         }
 
-        $_SESSION['success'] = "Your account has been verified. You can now log in.";
-        header("Location: {$this->baseUrl}?page=login");
-        exit;
+        setFlash('success', 'Your account has been verified. You can now log in.');
+        redirect("{$this->baseUrl}?page=login");
     }
 
     public function logout()
     {
         session_unset();
         session_destroy();
-        header("Location: {$this->baseUrl}?page=login");
-        exit;
+        // Start session again for flash use
+        session_start();
+        setFlash('success', 'Logged out successfully.');
+        redirect("{$this->baseUrl}?page=login");
     }
 
     private function sendOtpMail($email, $name, $otpCode)
     {
-        // Simple mail() version (works only if server mail configured)
-        $subject = "Your OTP Code for Account Verification";
-        $message = "Hello $name,\n\nYour OTP code is: $otpCode\nThis code is valid for 10 minutes.\n\nRegards,\nCodeCraft Auth System";
-        $headers = "From: no-reply@codecraft.local";
+        $mail = new PHPMailer(true);
 
-        @mail($email, $subject, $message, $headers);
+        try {
+            // Server settings
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'YOUR_EMAIL@gmail.com';
+            $mail->Password   = 'YOUR_APP_PASSWORD';
+            // Use TLS on port 587 for STARTTLS
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = 587;
 
-        // NOTE: For real production, better use PHPMailer + SMTP
+            // In some local/dev environments certificate verification may fail
+            $mail->SMTPOptions = [
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true,
+                ],
+            ];
+
+            // Recipients
+            // Use the configured username as the FROM address to avoid SMTP rejection
+            $mail->setFrom($mail->Username, 'CodeCraft Auth System');
+            $mail->addAddress($email, $name);
+
+            // Content
+            $mail->isHTML(true);
+            $mail->Subject = 'Your OTP Code for Account Verification';
+            $mail->Body    = "Hello {$name},<br><br>Your OTP code is: <b>{$otpCode}</b><br>This code is valid for 10 minutes.<br><br>Regards,<br>CodeCraft Auth System";
+            $mail->AltBody = "Hello {$name},\n\nYour OTP code is {$otpCode}. It is valid for 10 minutes.\n\nRegards,\nCodeCraft Auth System";
+
+            $mail->send();
+        } catch (Exception $e) {
+            // Log error with exception message for debugging
+            error_log('Mailer Exception: ' . $e->getMessage());
+            error_log('Mailer ErrorInfo: ' . $mail->ErrorInfo);
+        }
     }
+
+    public function resendOtp()
+{
+    // Only allow POST for resend to protect from CSRF
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        setFlash('error', 'Invalid request method.');
+        redirect("{$this->baseUrl}?page=verify_otp");
+    }
+
+    if (!csrf_validate($_POST['_csrf_token'] ?? '')) {
+        setFlash('error', 'Invalid CSRF token.');
+        redirect("{$this->baseUrl}?page=verify_otp");
+    }
+
+    $email = normalize_email($_SESSION['verify_email'] ?? '');
+
+    if (!$email) {
+        setFlash('error', "Session expired. Please register or log in again.");
+        redirect("{$this->baseUrl}?page=register");
+    }
+
+    $user = $this->userModel->findByEmail($email);
+    if (!$user) {
+        setFlash('error', "User not found.");
+        redirect("{$this->baseUrl}?page=register");
+    }
+
+    // Resend cooldown per email (60 seconds)
+    $key = "otp_resend_{$email}";
+    $cooldown = 60;
+    if (!empty($_SESSION[$key]) && time() - $_SESSION[$key] < $cooldown) {
+        setFlash('error', 'Please wait before resending OTP.');
+        redirect("{$this->baseUrl}?page=verify_otp");
+    }
+
+    $otpCode   = rand(100000, 999999);
+    $expiresAt = date('Y-m-d H:i:s', strtotime('+10 minutes'));
+
+    $this->userModel->setOtp($user['id'], $otpCode, $expiresAt);
+    $this->sendOtpMail($email, $user['name'], $otpCode);
+
+    $_SESSION[$key] = time();
+    setFlash('success', "A new OTP has been sent to your email.");
+    redirect("{$this->baseUrl}?page=verify_otp");
+}
+
+
+
 }
