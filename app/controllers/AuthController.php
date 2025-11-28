@@ -250,8 +250,8 @@ class AuthController
             $mail->isSMTP();
             $mail->Host       = 'smtp.hostinger.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'testing@pixelperfectstrategies.com';
-            $mail->Password   = 'vQ?dcr8f1';
+            $mail->Username   = 'testing@yourmail.com';
+            $mail->Password   = 'yourpassword';
             // Use TLS on port 587 for STARTTLS
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 465;
