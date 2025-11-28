@@ -1,10 +1,10 @@
 # CodeCraft Internship — Task 01  
 ## Secure User Authentication System (PHP + MySQL + PHPMailer)
 
-This project was developed as part of **Task 01 – Secure User Authentication** under the **CodeCraft Full Stack Web Development Virtual Internship**.  
-The objective was to design and implement a **complete user authentication system** using modern security practices such as OTP-based email verification, password hashing, session handling, and protected routing.
+This project has been developed as part of Task 01 – Secure User Authentication under the CodeCraft Full Stack Web Development Virtual Internship.
+The main objective is to create a production-ready authentication module featuring OTP-based verification, secure login, session handling, protected dashboard routing, and modern UI using Bootstrap + AdminLTE.
 
-The project demonstrates real-world authentication concepts and follows a clean MVC-style architecture, making it a solid foundation for production-level PHP applications.
+The system follows a clean MVC architecture, professional coding standards, and real-world security techniques—making it a perfect beginner-to-intermediate level full-stack authentication project.
 
 ---
 
@@ -33,17 +33,18 @@ This project serves as both a **learning assignment** and a **portfolio-ready au
 ## 🎯 Key Features
 
 - **User Registration** with server-side validation  
-- **Email OTP Verification** using PHPMailer + SMTP  
+- **Email OTP Verification** using PHPMailer + SMTP
+- **10-minute OTP expiry + resend option (60s)** 
 - **Login / Logout** with session-based authentication  
 - **Protected Dashboard Area** (accessible only after OTP verification)  
-- **Resend OTP** with 60-second cooldown  
 - **Password Hashing** using `password_hash()` (bcrypt)  
 - **Email Normalization** (trim + lowercase)  
 - **CSRF Protection** for all POST requests  
 - **Basic Rate-Limiting** to block brute-force attempts  
 - **Flash Messaging System** (success/error alerts)  
 - Clean **MVC-style project structure**  
-- UI built with **Bootstrap 4.6 + AdminLTE**  
+- **Rate-limiting** for login & OTP tries
+- Mobile-responsive UI
 
 ---
 
@@ -185,33 +186,5 @@ http://localhost/CODECRAFT_FS_01/public/
 
 ---
 
-## 📈 Future Enhancements
-
-- Forgot Password (email reset link)
-- Admin Panel & role-based authorization
-- OTP hashing (instead of plain storage)
-- Logging + audit trail system
-- API version using JWT
-- Migration to a front-end SPA (Vue/React)
-
----
-
 ## 👨‍💻 Developer Credit
 
-This project is designed and developed by **Harsh Pandey**  
-as part of **CodeCraft Full Stack Web Development Virtual Internship – Task 01**.
-
-> Portfolio Link (optional):  
-> Add your personal portfolio here — it strengthens your professional profile.
-
----
-
-If you want, I can also generate:  
-✔ A polished **GitHub repo description**  
-✔ A perfect **LinkedIn post caption**  
-✔ A **Task 01 submission description** for CodeCraft form  
-
-Just tell me:  
-**"LinkedIn caption do"** or  
-**"GitHub repo description do"** or  
-**"Task submission summary de do"**
