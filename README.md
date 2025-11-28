@@ -186,5 +186,14 @@ http://localhost/CODECRAFT_FS_01/public/
 
 ---
 
-## 👨‍💻 Developer Credit
+## Connect With Me
+
+-  Instagram: [@sasta_developer0143](https://www.instagram.com/sasta_developer0143)
+-  Personal Instagram: [@lucifer__1430](https://www.instagram.com/lucifer__1430)
+-  Portfolio: [Harsh Pandey](https://lucifer01430.github.io/Portfolio/)
+-  Email: harshpandeylucifer@gmail.com
+
+---
+
+> ⭐ **If this project helps you, please consider starring the repository!**
 
