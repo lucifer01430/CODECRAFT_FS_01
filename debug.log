@@ -1,40 +1,49 @@
-
-[28-Nov-2025 09:09:28 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 09:09:34 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 09:09:39 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 09:09:54 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 09:09:54 Europe/Berlin] verifyOtpForEmail: stored_otp=995163 expires_at=2025-11-28 09:19:35 for email=harshpandeylucifer@gmail.com
-[28-Nov-2025 09:09:54 Europe/Berlin] verifyOtpForEmail: verification successful for email=harshpandeylucifer@gmail.com
-[28-Nov-2025 09:09:54 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 09:10:00 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 09:10:00 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 09:55:26 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:05:25 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:05:25 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:05:28 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:05:32 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:08:21 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:11:09 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:11:17 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:11:17 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:11:19 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:11:19 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:11:56 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:12:06 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:12:06 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:12:22 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:12:22 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:12:38 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:12:41 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:13:08 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:13:08 Europe/Berlin] verifyOtpForEmail: stored_otp=131662 expires_at=2025-11-28 10:22:38 for email=harshpandeylucifer@gmail.com
-[28-Nov-2025 10:13:08 Europe/Berlin] verifyOtpForEmail: verification successful for email=harshpandeylucifer@gmail.com
-[28-Nov-2025 10:13:08 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:13:14 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:13:14 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:30:22 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:30:26 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:30:58 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:42:48 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:42:48 Europe/Berlin] error-config initialized: PHP error logging enabled
-[28-Nov-2025 10:47:10 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:31:52 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:31:52 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined method AuthController::sendResetEmail() in C:\xampp\htdocs\CODECRAFT_FS_01\app\controllers\AuthController.php:367
+Stack trace:
+#0 C:\xampp\htdocs\CODECRAFT_FS_01\public\index.php(69): AuthController->forgotPasswordSubmit()
+#1 {main}
+  thrown in C:\xampp\htdocs\CODECRAFT_FS_01\app\controllers\AuthController.php on line 367
+[28-Nov-2025 11:33:18 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:33:21 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:33:54 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:33:57 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:34:07 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:34:19 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:34:19 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:34:30 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:34:39 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:34:39 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:36:29 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:39:56 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:39:59 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:40:02 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:40:35 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:40:38 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:41:08 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:41:24 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:41:24 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:41:31 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:41:31 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:41:34 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:41:34 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:42:11 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:42:33 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:42:39 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:42:40 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:42:41 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:42:43 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:42:44 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:42:50 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:43:07 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:43:07 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:43:13 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:43:13 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:43:25 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:43:25 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:43:34 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:43:34 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:43:40 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:43:40 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:51:45 Europe/Berlin] error-config initialized: PHP error logging enabled
+[28-Nov-2025 11:51:49 Europe/Berlin] error-config initialized: PHP error logging enabled

@@ -94,4 +94,42 @@ class User
         error_log("verifyOtpForEmail: verification successful for email={$email}");
         return $user;
     }
+
+
+    // Reuse otp_code/otp_expires_at columns to store password reset token (avoids DB schema change)
+    public function storeResetToken($userId, $token, $expiresAt)
+    {
+        // Use dedicated reset_token columns (recommended). If schema hasn't been migrated
+        // and columns don't exist, this will fail — run the migration provided.
+        $stmt = $this->pdo->prepare(
+            "UPDATE users SET reset_token = :token, reset_expires_at = :expires WHERE id = :id"
+        );
+        return $stmt->execute([
+            'token' => $token,
+            'expires' => $expiresAt,
+            'id' => $userId
+        ]);
+    }
+
+    public function findByResetToken($token)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE reset_token = :token LIMIT 1");
+        $stmt->execute(['token' => $token]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$user) return false;
+        if (!empty($user['reset_expires_at']) && strtotime($user['reset_expires_at']) < time()) {
+            return false;
+        }
+        return $user;
+    }
+
+    public function updatePassword($userId, $passwordHash)
+    {
+        // Clear both OTP and reset token fields to be safe
+        $stmt = $this->pdo->prepare(
+            "UPDATE users SET password = :password, otp_code = NULL, otp_expires_at = NULL, reset_token = NULL, reset_expires_at = NULL WHERE id = :id"
+        );
+        return $stmt->execute(['password' => $passwordHash, 'id' => $userId]);
+    }
+
 }

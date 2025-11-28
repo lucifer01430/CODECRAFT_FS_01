@@ -61,6 +61,22 @@ switch ($page) {
     $authController->resendOtp();
     break;
 
+    case 'forgot_password':
+    $authController->forgotPassword();
+    break;
+
+    case 'forgot_password_submit':
+        $authController->forgotPasswordSubmit();
+        break;
+
+    case 'reset_password':
+        $authController->resetPassword();
+        break;
+
+    case 'reset_password_submit':
+        $authController->resetPasswordSubmit();
+        break;
+
     
     default:
         // Unknown page → redirect to login

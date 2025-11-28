@@ -7,12 +7,15 @@ $title = "Register";
 ob_start();
 ?>
 
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow-sm">
+<?php $bodyClass = 'login-page'; ?>
+<div class="register-page d-flex justify-content-center align-items-center" style="min-height:70vh;">
+    <div class="register-box" style="width:520px;">
+        <div class="card card-outline card-primary">
+            <div class="card-header text-center">
+                <a href="index.php" class="h1"><b>Code</b>Craft</a>
+            </div>
             <div class="card-body">
-
-                <h3 class="text-center mb-3">Create Account</h3>
+                <p class="login-box-msg">Register a new account</p>
 
                 <?php if (!empty($error)): ?>
                     <div class="alert alert-danger"><?= e($error) ?></div>
@@ -22,36 +25,45 @@ ob_start();
                     <div class="alert alert-success"><?= e($success) ?></div>
                 <?php endif; ?>
 
-                <form action="index.php?page=register_submit" method="POST">
+                <form action="index.php?page=register_submit" method="POST" novalidate>
                     <input type="hidden" name="_csrf_token" value="<?= csrf_token() ?>">
 
-                    <div class="mb-3">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" name="name" class="form-control" required value="<?= e($_POST['name'] ?? '') ?>">
+                    <div class="input-group mb-3">
+                        <input type="text" name="name" class="form-control" placeholder="Full name" required value="<?= e($_POST['name'] ?? '') ?>">
+                        <div class="input-group-append">
+                            <div class="input-group-text"><span class="fas fa-user"></span></div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" required value="<?= e($_POST['email'] ?? '') ?>">
+                    <div class="input-group mb-3">
+                        <input type="email" name="email" class="form-control" placeholder="Email" required value="<?= e($_POST['email'] ?? '') ?>">
+                        <div class="input-group-append">
+                            <div class="input-group-text"><span class="fas fa-envelope"></span></div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" required>
+                    <div class="input-group mb-3">
+                        <input type="password" name="password" class="form-control" placeholder="Password" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text"><span class="fas fa-lock"></span></div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Confirm Password</label>
-                        <input type="password" name="confirm_password" class="form-control" required>
+                    <div class="input-group mb-3">
+                        <input type="password" name="confirm_password" class="form-control" placeholder="Retype password" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text"><span class="fas fa-check"></span></div>
+                        </div>
                     </div>
 
-                    <button class="btn btn-primary w-100">Register</button>
-
-                    <div class="text-center mt-3">
-                        <a href="index.php?page=login">Already have an account? Login</a>
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary btn-block">Register</button>
+                        </div>
                     </div>
                 </form>
 
+                <a href="index.php?page=login" class="text-center d-block mt-3">I already have an account</a>
             </div>
         </div>
     </div>

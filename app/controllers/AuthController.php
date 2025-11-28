@@ -248,13 +248,13 @@ class AuthController
         try {
             // Server settings
             $mail->isSMTP();
-            $mail->Host       = 'smtp.gmail.com';
+            $mail->Host       = 'smtp.hostinger.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'YOUR_EMAIL@gmail.com';
-            $mail->Password   = 'YOUR_APP_PASSWORD';
+            $mail->Username   = 'testing@pixelperfectstrategies.com';
+            $mail->Password   = 'vQ?dcr8f1';
             // Use TLS on port 587 for STARTTLS
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = 587;
+            $mail->Port       = 465;
 
             // In some local/dev environments certificate verification may fail
             $mail->SMTPOptions = [
@@ -281,6 +281,41 @@ class AuthController
             // Log error with exception message for debugging
             error_log('Mailer Exception: ' . $e->getMessage());
             error_log('Mailer ErrorInfo: ' . $mail->ErrorInfo);
+        }
+    }
+
+    // Send password reset email with a reset link
+    private function sendResetEmail($email, $name, $resetLink)
+    {
+        $mail = new PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.hostinger.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'testing@pixelperfectstrategies.com';
+            $mail->Password   = 'vQ?dcr8f1';
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = 587;
+
+            $mail->SMTPOptions = [
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true,
+                ],
+            ];
+
+            $mail->setFrom($mail->Username, 'CodeCraft Auth System');
+            $mail->addAddress($email, $name);
+
+            $mail->isHTML(true);
+            $mail->Subject = 'Password Reset Request';
+            $mail->Body    = "Hello {$name},<br><br>Click the link below to reset your password:<br><a href=\"{$resetLink}\">Reset Password</a><br><br>This link is valid for 15 minutes.<br><br>Regards,<br>CodeCraft Auth System";
+            $mail->AltBody = "Hello {$name},\n\nVisit the following link to reset your password: {$resetLink}\n\nThis link is valid for 15 minutes.\n\nRegards,\nCodeCraft Auth System";
+
+            $mail->send();
+        } catch (Exception $e) {
+            error_log('Reset mail failed: ' . $e->getMessage());
         }
     }
 
@@ -329,6 +364,95 @@ class AuthController
     redirect("{$this->baseUrl}?page=verify_otp");
 }
 
+    public function forgotPassword()
+{
+    $error = getFlash('error');
+    $success = getFlash('success');
+
+    include __DIR__ . '/../views/auth/forgot_password.php';
+}
+
+    public function forgotPasswordSubmit()
+{
+    $email = strtolower(trim($_POST['email'] ?? ''));
+
+    if ($email === '') {
+        setFlash('error', 'Email is required.');
+        header("Location: index.php?page=forgot_password");
+        exit;
+    }
+
+    $user = $this->userModel->findByEmail($email);
+
+    if (!$user) {
+        setFlash('success', 'If this email exists, a reset link has been sent.');
+        header("Location: index.php?page=forgot_password");
+        exit;
+    }
+
+    // Create token
+    $token = bin2hex(random_bytes(32));
+    $expiresAt = date('Y-m-d H:i:s', strtotime('+15 minutes'));
+
+    $this->userModel->storeResetToken($user['id'], $token, $expiresAt);
+
+    $resetLink = "http://localhost/CODECRAFT_FS_01/public/index.php?page=reset_password&token=" . urlencode($token);
+
+    // Send email
+    $this->sendResetEmail($email, $user['name'], $resetLink);
+
+    setFlash('success', 'Password reset link has been sent to your email.');
+    header("Location: index.php?page=forgot_password");
+    exit;
+}
+
+    public function resetPassword()
+{
+    $token = $_GET['token'] ?? null;
+
+    if (!$token) {
+        setFlash('error', 'Invalid reset link.');
+        header("Location: index.php?page=forgot_password");
+        exit;
+    }
+
+    include __DIR__ . '/../views/auth/reset_password.php';
+}
+
+
+        public function resetPasswordSubmit()
+{
+    $token = $_POST['token'] ?? null;
+    $password = $_POST['password'] ?? null;
+    $confirm = $_POST['confirm_password'] ?? null;
+
+    if (!$token || !$password || !$confirm) {
+        setFlash('error', 'All fields are required.');
+        header("Location: index.php?page=reset_password&token=" . urlencode($token));
+        exit;
+    }
+
+    if ($password !== $confirm) {
+        setFlash('error', 'Passwords do not match.');
+        header("Location: index.php?page=reset_password&token=" . urlencode($token));
+        exit;
+    }
+
+    $user = $this->userModel->findByResetToken($token);
+    if (!$user) {
+        setFlash('error', 'Invalid or expired token.');
+        header("Location: index.php?page=forgot_password");
+        exit;
+    }
+
+    $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+
+    $this->userModel->updatePassword($user['id'], $passwordHash);
+
+    setFlash('success', 'Password reset successful. You can now login.');
+    header("Location: index.php?page=login");
+    exit;
+}
 
 
 }

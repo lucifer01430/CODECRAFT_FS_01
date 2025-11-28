@@ -5,7 +5,7 @@ $title = "Dashboard";
 ob_start();
 ?>
 
-<div class="row justify-content-center">
+<div class="row justify-content-center mt-4">
     <div class="col-md-8">
         <div class="card card-primary card-outline shadow-sm">
             <div class="card-header">
@@ -20,7 +20,9 @@ ob_start();
                            id="welcome-tab"
                            data-toggle="tab"
                            href="#welcome"
-                           role="tab">
+                           role="tab"
+                           aria-controls="welcome"
+                           aria-selected="true">
                             Welcome
                         </a>
                     </li>
@@ -29,7 +31,9 @@ ob_start();
                            id="overview-tab"
                            data-toggle="tab"
                            href="#overview"
-                           role="tab">
+                           role="tab"
+                           aria-controls="overview"
+                           aria-selected="false">
                             Project Overview
                         </a>
                     </li>
@@ -37,7 +41,10 @@ ob_start();
 
                 <div class="tab-content pt-3" id="dashboardTabsContent">
                     <!-- Welcome Tab -->
-                    <div class="tab-pane fade show active" id="welcome" role="tabpanel" aria-labelledby="welcome-tab">
+                    <div class="tab-pane fade show active"
+                         id="welcome"
+                         role="tabpanel"
+                         aria-labelledby="welcome-tab">
                         <div class="text-center py-4">
                             <h2 class="mb-3">Welcome, <?= e($userName) ?> 👋</h2>
                             <p class="text-muted mb-4">
@@ -48,13 +55,19 @@ ob_start();
                     </div>
 
                     <!-- Project Overview Tab -->
-                    <div class="tab-pane fade" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                    <div class="tab-pane fade"
+                         id="overview"
+                         role="tabpanel"
+                         aria-labelledby="overview-tab">
+
                         <h4 class="mb-3">Project Overview</h4>
 
                         <p>
-                            This application is a <strong>Secure User Authentication System</strong>
+                            This application is a
+                            <strong>Secure User Authentication System</strong>
                             developed as part of the
-                            <strong>CodeCraft Full Stack Web Development</strong> virtual internship.
+                            <strong>CodeCraft Full Stack Web Development</strong>
+                            virtual internship.
                         </p>
 
                         <p>
@@ -66,26 +79,28 @@ ob_start();
                         <h5 class="mt-3">Why this project was built?</h5>
                         <ul>
                             <li>To practice secure login and registration using industry best practices.</li>
-                            <li>To handle email OTP verification using PHPMailer and SMTP.</li>
-                            <li>To showcase a clean MVC-style PHP project structure.</li>
-                            <li>To complete <strong>Task 01 – Secure User Authentication</strong> in the internship track.</li>
+                            <li>To implement email-based OTP verification using PHPMailer and SMTP.</li>
+                            <li>To showcase a clean, maintainable MVC-style PHP project structure.</li>
+                            <li>To complete <strong>Task 01 – Secure User Authentication</strong> in the CodeCraft internship track.</li>
                         </ul>
 
                         <h5 class="mt-3">Tech Stack Used</h5>
                         <ul>
                             <li><strong>Backend:</strong> PHP 8 (Core PHP, MVC pattern)</li>
-                            <li><strong>Database:</strong> MySQL</li>
+                            <li><strong>Database:</strong> MySQL (PDO, prepared statements)</li>
                             <li><strong>Email:</strong> PHPMailer + SMTP (for OTP delivery)</li>
                             <li><strong>Frontend:</strong> HTML, CSS, Bootstrap 4, AdminLTE 3</li>
-                            <li><strong>Server:</strong> Apache (XAMPP) with .htaccess routing</li>
+                            <li><strong>Server:</strong> Apache (XAMPP) with <code>.htaccess</code> routing</li>
                         </ul>
 
-                        <h5 class="mt-3">Author & Context</h5>
+                        <h5 class="mt-3">Author &amp; Context</h5>
                         <p>
                             This assignment has been designed and implemented by
-                            <strong>Harsh Pandey</strong> as part of
+                            <strong><a href="https://lucifer01430.github.io/Portfolio/" target="_blank">Harsh Pandey</a></strong>
+                            as part of
                             <strong>Task 01 – Secure User Authentication</strong>
-                            in the <strong>CodeCraft Full Stack Web Development Internship</strong>.
+                            in the
+                            <strong>CodeCraft Full Stack Web Development Virtual Internship</strong>.
                         </p>
                     </div>
                 </div>
